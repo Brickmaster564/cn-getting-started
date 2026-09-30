@@ -1,0 +1,703 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Client Network — Getting Started</title>
+<style>
+@font-face { font-family:'Fig'; src:url('/Users/jasper/Library/Fonts/Figtree-VariableFont_wght.ttf'); font-weight:100 900; }
+
+:root{
+  --bg:#F4F6F5;
+  --ink:#16211F;
+  --grey:#6E7A78;
+  --grey-lt:#9AA5A3;
+  --teal:#6BBFAB;
+  --teal-dk:#2E8570;
+  --teal-bg:#E7F3EF;
+  --dark:#16211E;
+  --line:#D8E1DE;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{font-family:'Fig',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;}
+@page{ size:A4; margin:0; }
+
+.page{
+  position:relative; width:210mm; height:297mm; overflow:hidden;
+  background:var(--bg); page-break-after:always;
+  padding:13mm 15mm 12mm 15mm;
+}
+.page:last-child{page-break-after:auto;}
+
+/* soft brand blobs */
+.blob{position:absolute;border-radius:50%;filter:blur(55px);opacity:.5;z-index:0;}
+.b1{width:260mm;height:215mm;right:-105mm;top:-72mm;background:radial-gradient(circle at 42% 46%, rgba(107,191,171,.50) 0%, rgba(107,191,171,.22) 26%, rgba(107,191,171,0) 48%);}
+.b2{width:195mm;height:165mm;left:-78mm;bottom:-62mm;background:radial-gradient(circle at 54% 46%, rgba(107,191,171,.30) 0%, rgba(107,191,171,.13) 26%, rgba(107,191,171,0) 48%);}
+.inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;}
+
+/* ---------- header ---------- */
+.head{flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:5mm;border-bottom:1px solid var(--line);}
+.brand{display:flex;align-items:center;gap:3.2mm;}
+.brand img{width:9.6mm;height:9.6mm;object-fit:contain;}
+.brand span{font-size:7.2pt;font-weight:700;letter-spacing:2.4px;line-height:1.45;color:var(--ink);}
+.tag{font-size:6.6pt;font-weight:700;letter-spacing:2.2px;color:var(--teal-dk);
+     background:var(--teal-bg);padding:2.1mm 4mm;border-radius:99px;}
+
+/* ---------- section rail + titles ---------- */
+.rail{display:flex;align-items:center;gap:3mm;margin-top:7mm;}
+.rail .n{font-size:9pt;font-weight:800;letter-spacing:1.6px;color:var(--ink);}
+.rail .bar{width:9mm;height:1.4px;background:var(--teal);}
+.rail .lbl{font-size:7pt;font-weight:700;letter-spacing:2.4px;color:var(--teal-dk);}
+
+h1.display{font-size:27pt;font-weight:800;letter-spacing:-.6px;line-height:1.1;margin-top:2.6mm;}
+p.lede{font-size:9.6pt;line-height:1.62;color:var(--grey);margin-top:3.4mm;max-width:158mm;}
+p.lede b{color:var(--ink);font-weight:700;}
+
+.eyebrow{display:flex;align-items:center;gap:2.6mm;margin-top:7mm;margin-bottom:3.2mm;}
+.eyebrow .dash{width:5mm;height:1.4px;background:var(--ink);}
+.eyebrow .t{font-size:8.4pt;font-weight:700;color:var(--ink);}
+.eyebrow .s{font-size:8.4pt;font-weight:400;color:var(--grey-lt);}
+
+/* ---------- cards ---------- */
+.grid2{flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;gap:3.4mm;}
+.card{background:#fff;border:1px solid var(--line);border-radius:3.2mm;padding:4.4mm 4.8mm;
+      box-shadow:0 1px 2px rgba(20,40,35,.04), 0 6px 18px rgba(20,40,35,.035);}
+.card h3{font-size:10pt;font-weight:700;line-height:1.25;}
+.card p{font-size:8.4pt;line-height:1.5;color:var(--grey);margin-top:1.6mm;}
+
+/* ---------- panels ---------- */
+.panel{flex-shrink:0;border-radius:3.2mm;padding:6mm 6.5mm;}
+.panel.teal{background:var(--teal-bg);border-left:3.5mm solid var(--teal);}
+.panel.dark{background:var(--dark);color:#fff;}
+.klabel{font-size:6.8pt;font-weight:700;letter-spacing:2.2px;color:var(--teal-dk);}
+.panel.dark .klabel{color:var(--teal);}
+.panel h2{font-size:13pt;font-weight:800;line-height:1.28;margin-top:2.4mm;letter-spacing:-.2px;}
+.panel p{font-size:8.6pt;line-height:1.55;color:var(--grey);margin-top:2.4mm;}
+.panel.dark p{color:#B7C4C0;}
+.panel.dark h2{color:#fff;}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:6mm;margin-top:4.6mm;}
+.split .col-h{font-size:6.8pt;font-weight:700;letter-spacing:2px;color:var(--ink);margin-bottom:2.6mm;}
+.split .col:last-child .col-h{color:var(--grey-lt);}
+.split ul{list-style:none;}
+.split li{font-size:8.4pt;line-height:1.42;color:var(--ink);margin-bottom:2.4mm;padding-left:5.2mm;position:relative;}
+.split .col:last-child li{color:var(--grey);}
+.split li:before{position:absolute;left:0;top:0;font-weight:800;font-size:8.4pt;}
+.split .col:first-child li:before{content:'✓';color:var(--teal-dk);}
+.split .col:last-child li:before{content:'✕';color:var(--grey-lt);}
+
+/* ---------- three-up strip (no boxes) ---------- */
+.trio{flex-shrink:0;display:grid;grid-template-columns:repeat(3,1fr);gap:9mm;}
+.trio .t{border-top:1.6px solid var(--teal);padding-top:3.6mm;}
+.trio h3{font-size:10pt;font-weight:700;line-height:1.25;}
+.trio p{font-size:8.3pt;line-height:1.52;color:var(--grey);margin-top:2mm;}
+
+/* ---------- dark split block ---------- */
+.panel.dark .split .col-h{color:#fff;}
+.panel.dark .split .col:last-child .col-h{color:#7E908B;}
+.panel.dark .split li{color:#E6EDEB;}
+.panel.dark .split .col:last-child li{color:#94A5A0;}
+.panel.dark .split .col:first-child li:before{color:var(--teal);}
+.panel.dark .split .col:last-child li:before{color:#5E706B;}
+.panel.dark .split{border-top:1px solid rgba(255,255,255,.10);padding-top:5mm;margin-top:5mm;}
+
+/* ---------- light note strip ---------- */
+.note{flex-shrink:0;border-top:1px solid var(--line);padding-top:4.6mm;
+      display:grid;grid-template-columns:44mm 1fr;gap:7mm;align-items:start;}
+.note .nh{font-size:6.8pt;font-weight:700;letter-spacing:2.2px;color:var(--teal-dk);}
+.note .nt{font-size:10.5pt;font-weight:800;line-height:1.28;margin-top:2.2mm;letter-spacing:-.2px;}
+.note p{font-size:8.8pt;line-height:1.6;color:var(--grey);}
+
+/* ---------- key/value rows ---------- */
+.rows{flex-shrink:0;border-top:1px solid var(--line);}
+.row{display:grid;grid-template-columns:38mm 1fr;gap:5mm;padding:2.9mm 0;border-bottom:1px solid var(--line);}
+.row .k{font-size:9pt;font-weight:700;}
+.row .v{font-size:8.4pt;line-height:1.45;color:var(--grey);}
+
+/* ---------- numbered steps ---------- */
+.step{display:grid;grid-template-columns:8mm 1fr;gap:3.6mm;align-items:start;margin-bottom:3.4mm;}
+.step .num{width:8mm;height:8mm;border-radius:50%;background:var(--teal-bg);color:var(--teal-dk);
+           font-size:9pt;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.step h4{font-size:9.4pt;font-weight:700;line-height:1.25;padding-top:1mm;}
+.step p{font-size:8.2pt;line-height:1.45;color:var(--grey);margin-top:1.2mm;}
+
+/* ---------- shots ---------- */
+.shot{flex-shrink:0;border:1px solid var(--line);border-radius:2.6mm;overflow:hidden;background:#fff;
+      box-shadow:0 2px 6px rgba(20,40,35,.05), 0 12px 30px rgba(20,40,35,.05);}
+.shot img{display:block;width:100%;}
+.cap{font-size:7.4pt;line-height:1.45;color:var(--grey-lt);margin-top:2.2mm;}
+
+/* ---------- footer ---------- */
+.foot{margin-top:auto;padding-top:4mm;border-top:1px solid var(--line);
+      display:flex;justify-content:space-between;align-items:center;}
+.foot span{font-size:6.6pt;font-weight:600;letter-spacing:1.8px;color:var(--grey-lt);}
+
+/* ---------- cover ---------- */
+.cover{display:flex;flex-direction:column;height:100%;position:relative;z-index:1;}
+.cover .mark{width:38mm;height:38mm;object-fit:contain;margin-top:6mm;}
+.cover .mid{margin-top:auto;}
+.cover .eyeb{font-size:8pt;font-weight:700;letter-spacing:4px;color:var(--teal-dk);margin-bottom:5mm;}
+.cover h1{font-size:47pt;font-weight:800;line-height:1.02;letter-spacing:-1.6px;}
+.cover .sub{font-size:10.4pt;line-height:1.62;color:var(--grey);margin-top:6mm;max-width:120mm;}
+.cover .sub b{color:var(--ink);font-weight:700;}
+.cover .cfoot{margin-top:auto;padding-top:5mm;border-top:1px solid var(--line);
+              display:flex;justify-content:space-between;align-items:center;}
+.cover .cfoot .l{display:flex;align-items:center;gap:2.6mm;}
+.cover .dot{width:2mm;height:2mm;border-radius:50%;background:var(--teal);}
+.cover .cfoot span{font-size:6.8pt;font-weight:600;letter-spacing:1.8px;color:var(--grey-lt);}
+
+/* ═══════════ 13.333in × 7.5in widescreen deck ═══════════ */
+@page{ size:338.667mm 190.5mm; margin:0; }
+
+.slide{
+  position:relative;width:338.667mm;height:190.5mm;overflow:hidden;
+  background:var(--bg);page-break-after:always;padding:16mm 20mm 14mm;
+}
+.slide:last-child{page-break-after:auto;}
+.slide .inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;}
+
+.blob.d1{width:330mm;height:260mm;right:-140mm;top:-105mm;
+  background:radial-gradient(circle at 42% 46%, rgba(107,191,171,.50) 0%, rgba(107,191,171,.22) 26%, rgba(107,191,171,0) 48%);}
+.blob.d2{width:250mm;height:200mm;left:-105mm;bottom:-85mm;
+  background:radial-gradient(circle at 54% 46%, rgba(107,191,171,.30) 0%, rgba(107,191,171,.13) 26%, rgba(107,191,171,0) 48%);}
+
+/* ---------- slide chrome ---------- */
+.shead{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+       padding-bottom:5mm;border-bottom:1px solid var(--line);}
+.shead .brand img{width:9mm;height:9mm;object-fit:contain;}
+.shead .brand span{font-size:7.4pt;font-weight:700;letter-spacing:2.6px;line-height:1.45;}
+.shead .num{font-size:7pt;font-weight:700;letter-spacing:2.2px;color:var(--grey-lt);}
+
+.srail{flex-shrink:0;display:flex;align-items:center;gap:3.4mm;margin-top:9mm;}
+.srail .n{font-size:10pt;font-weight:800;letter-spacing:1.6px;}
+.srail .bar{width:11mm;height:1.6px;background:var(--teal);}
+.srail .lbl{font-size:7.6pt;font-weight:700;letter-spacing:2.6px;color:var(--teal-dk);}
+
+h1.sh{font-size:34pt;font-weight:800;letter-spacing:-1px;line-height:1.08;margin-top:3.4mm;}
+p.sl{font-size:12pt;line-height:1.6;color:#3C4744;margin-top:5mm;max-width:210mm;}
+p.sl b{font-weight:700;color:var(--ink);}
+
+/* ---------- three-up ---------- */
+.d3{flex-shrink:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12mm;margin-top:auto;margin-bottom:6mm;}
+.d3 .t{border-top:2px solid var(--teal);padding-top:5mm;}
+.d3 h3{font-size:14pt;font-weight:800;line-height:1.2;letter-spacing:-.3px;}
+.d3 p{font-size:11pt;line-height:1.55;color:var(--grey);margin-top:3.4mm;}
+
+/* ---------- pay / do not pay ---------- */
+.dsplit{flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;gap:14mm;margin-top:8mm;}
+.dsplit .h{font-size:8pt;font-weight:700;letter-spacing:2.4px;margin-bottom:5mm;}
+.dsplit .yes .h{color:var(--teal-dk);}
+.dsplit .no .h{color:var(--grey-lt);}
+.dsplit ul{list-style:none;}
+.dsplit li{font-size:12pt;line-height:1.45;margin-bottom:4.4mm;padding-left:8mm;position:relative;color:var(--ink);}
+.dsplit .no li{color:var(--grey);}
+.dsplit li:before{position:absolute;left:0;top:0;font-weight:800;font-size:12pt;}
+.dsplit .yes li:before{content:'\2713';color:var(--teal-dk);}
+.dsplit .no li:before{content:'\2715';color:var(--grey-lt);}
+
+/* ---------- dark statement ---------- */
+.dstate{flex-shrink:0;background:var(--dark);color:#fff;border-radius:3.6mm;padding:11mm 13mm;margin-top:auto;margin-bottom:4mm;}
+.dstate .k{font-size:7.6pt;font-weight:700;letter-spacing:2.6px;color:var(--teal);}
+.dstate h2{font-size:23pt;font-weight:800;line-height:1.15;letter-spacing:-.5px;margin-top:4mm;max-width:250mm;}
+.dstate p{font-size:11.5pt;line-height:1.6;color:#C3CFCB;margin-top:5mm;max-width:250mm;}
+.dstate p b{color:#fff;font-weight:700;}
+
+/* ---------- media slide ---------- */
+.dmedia{flex-shrink:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:14mm;
+        margin-top:8mm;align-items:center;}
+.dmedia.wide{grid-template-columns:1fr;}
+.dshot{border:1px solid var(--line);border-radius:2.6mm;overflow:hidden;background:#fff;
+       box-shadow:0 2px 6px rgba(20,40,35,.05), 0 14px 34px rgba(20,40,35,.07);}
+.dshot img{display:block;width:100%;}
+
+/* ---------- key rows ---------- */
+.drows{flex-shrink:0;border-top:1px solid var(--line);margin-top:7mm;}
+.drow{display:grid;grid-template-columns:62mm 1fr;gap:10mm;padding:4.2mm 0;border-bottom:1px solid var(--line);}
+.drow .k{font-size:12pt;font-weight:700;}
+.drow .v{font-size:11pt;line-height:1.5;color:var(--grey);}
+
+/* ---------- numbered steps ---------- */
+.dsteps{flex-shrink:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10mm;margin-top:auto;margin-bottom:6mm;}
+.dstep .n{width:12mm;height:12mm;border-radius:50%;background:var(--teal);color:#fff;
+          font-size:11pt;font-weight:800;display:flex;align-items:center;justify-content:center;
+          box-shadow:0 2px 4px rgba(20,60,50,.14), 0 8px 18px rgba(20,60,50,.12);}
+.dstep h4{font-size:13pt;font-weight:800;line-height:1.2;margin-top:5mm;letter-spacing:-.2px;}
+.dstep p{font-size:10.5pt;line-height:1.5;color:var(--grey);margin-top:3mm;}
+
+/* ---------- stat strip ---------- */
+.dstats{flex-shrink:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+        border:1px solid var(--line);background:#fff;border-radius:3.2mm;overflow:hidden;margin-top:8mm;}
+.dstats > div{padding:8mm 9mm;border-right:1px solid var(--line);}
+.dstats > div:last-child{border-right:none;}
+.dstats .k{font-size:7.6pt;font-weight:700;letter-spacing:2.2px;color:var(--grey-lt);}
+.dstats .v{font-size:26pt;font-weight:800;letter-spacing:-1px;margin-top:3mm;line-height:1;}
+.dstats .s{font-size:10.5pt;line-height:1.5;color:var(--grey);margin-top:3.4mm;}
+
+/* ---------- cover ---------- */
+.dcover{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;}
+.dcover img.mark{width:34mm;height:34mm;object-fit:contain;}
+.dcover .mid{margin-top:auto;}
+.dcover .eyeb{font-size:9pt;font-weight:700;letter-spacing:4.4px;color:var(--teal-dk);margin-bottom:6mm;}
+.dcover h1{font-size:62pt;font-weight:800;line-height:1;letter-spacing:-2.4px;}
+.dcover .sub{font-size:13pt;line-height:1.6;color:var(--grey);margin-top:7mm;max-width:190mm;}
+.dcover .sub b{color:var(--ink);font-weight:700;}
+.dcover .cfoot{margin-top:auto;padding-top:6mm;border-top:1px solid var(--line);
+               display:flex;justify-content:space-between;align-items:center;}
+.dcover .cfoot span{font-size:7.6pt;font-weight:600;letter-spacing:2px;color:var(--grey-lt);}
+.dcover .l{display:flex;align-items:center;gap:3mm;}
+.dcover .dot{width:2.4mm;height:2.4mm;border-radius:50%;background:var(--teal);}
+
+/* ---------- closing slide ---------- */
+.dcontact{flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;gap:14mm;margin-top:auto;margin-bottom:6mm;}
+.dcontact .k{font-size:8pt;font-weight:700;letter-spacing:2.4px;color:var(--grey-lt);}
+.dcontact .v{font-size:20pt;font-weight:800;letter-spacing:-.6px;margin-top:4mm;}
+
+/* centre the body block in the space left under the headline */
+.d3, .dsplit, .dstate, .drows, .dsteps, .dstats, .dcontact, .dmedia{
+  margin-top:auto; margin-bottom:auto;
+}
+.dsplit{margin-top:10mm;}
+.shead .brand{display:flex;align-items:center;gap:3mm;}
+
+/* ---------- steps + disqualifier badges, held together as one block ---------- */
+.dflow{flex-shrink:0;margin-top:auto;margin-bottom:auto;}
+.dflow .dsteps{margin-top:0;margin-bottom:10mm;}
+.dnots{display:flex;gap:5mm;flex-wrap:wrap;}
+.dnots span{display:inline-flex;align-items:center;gap:3.2mm;background:var(--dark);color:#fff;
+  border-radius:2.4mm;padding:4.4mm 7mm;font-size:11pt;font-weight:700;letter-spacing:-.2px;}
+.dnots span:before{content:'\2715';color:var(--teal);font-weight:800;font-size:11pt;}
+
+/* ---------- pull quote from a real call ---------- */
+.dquote{flex-shrink:0;border-left:2px solid var(--teal);padding-left:7mm;margin-top:10mm;}
+.dquote p{font-size:14pt;line-height:1.45;font-weight:700;letter-spacing:-.3px;max-width:225mm;}
+.dquote span{display:block;font-size:8pt;font-weight:700;letter-spacing:2.4px;
+  color:var(--grey-lt);margin-top:4mm;}
+
+/* ---------- video: plays on screen, poster frame in print ---------- */
+@media print{ .screenonly{display:none!important;} }
+@media screen{ .printonly{display:none!important;} }
+.vwrap{position:relative;line-height:0;}
+.vwrap video, .vwrap img{display:block;width:100%;}
+.vwrap .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:24mm;height:24mm;border-radius:50%;background:rgba(107,191,171,.95);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4mm 14mm rgba(10,30,25,.30);}
+.vwrap .play:after{content:'';border-left:8.4mm solid #fff;border-top:5mm solid transparent;
+  border-bottom:5mm solid transparent;margin-left:2.4mm;}
+.vcap{font-size:9.5pt;line-height:1.5;color:var(--grey-lt);margin-top:4mm;text-align:center;}
+.dmedia .vwrap{max-width:132mm;margin:0 auto;}
+.dmedia .vcap{max-width:132mm;margin-left:auto;margin-right:auto;}
+
+/* ---------- call transcript ---------- */
+.tx{margin:auto 0;background:var(--ink);border-radius:3.6mm;padding:9mm 10mm;}
+.tx .row{display:grid;grid-template-columns:16mm 22mm 1fr;gap:5mm;padding:2.4mm 0;align-items:baseline;}
+.tx .t{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10pt;color:#7E908B;}
+.tx .who{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9pt;font-weight:700;
+         letter-spacing:1.4px;color:#9FB3AD;text-transform:uppercase;}
+.tx .said{font-size:12pt;line-height:1.5;color:#E6EDEB;}
+.tx .row.hot .said{color:#fff;font-weight:700;}
+.tx .row.hot{background:rgba(107,191,171,.14);border-radius:2mm;margin:0 -4mm;padding-left:4mm;padding-right:4mm;}
+.tx .gap{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9.5pt;color:#7E908B;
+         padding:2mm 0 2mm 43mm;font-style:italic;}
+.tx .end{display:grid;grid-template-columns:16mm 1fr;gap:5mm;align-items:baseline;margin-top:3mm;
+         padding-top:4mm;border-top:1px solid rgba(255,255,255,.14);}
+.tx .end .t{color:#ef8f8f;}
+.tx .end .lbl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5pt;font-weight:700;
+              letter-spacing:1.4px;color:#ef8f8f;text-transform:uppercase;}
+.txnote{margin-top:6mm;font-size:12pt;line-height:1.55;color:#3C4744;}
+.txnote b{font-weight:700;color:var(--ink);}
+
+/* ═══════════ on screen this is a deck viewer, not a print proof ═══════════ */
+@media screen {
+  html, body { background:#1C201F; }
+  html { scroll-snap-type:y mandatory; }
+  body { padding:0; }
+  /* one slide per screenful, centred, snapping like a presentation */
+  .slide {
+    margin:0 auto;
+    box-shadow:0 10px 40px rgba(0,0,0,.45);
+    border-radius:4px;
+    scroll-snap-align:center;
+    scroll-margin:0;
+  }
+}
+/* JS sizes the slide to the window; print must always be back at 1:1 */
+@media print { .slide { zoom:1 !important; margin:0 !important; box-shadow:none !important; border-radius:0 !important; } }
+/* Chrome exports blurred box-shadows as soft-masked images; macOS Preview draws
+   them as solid grey squares behind circles, cards and screenshots. */
+@media print { * { box-shadow:none !important; } }
+
+/* ---------- pay-for / not-paying-for panels ----------
+   The right-hand panel is red on purpose: it is the cost the buyer is used to
+   carrying, and it has to read as the thing being taken away, not as a second
+   feature list. */
+.dsplit .yes, .dsplit .warn{border-radius:3.2mm;padding:9mm 10mm;}
+.dsplit .yes{background:#F2F9F7;border:1px solid #CFE7E0;}
+.dsplit .warn{background:#FCF3F2;border:1px solid #F0CFCB;}
+.dsplit .warn .h{color:#B42318;font-size:8pt;font-weight:700;letter-spacing:2.4px;margin-bottom:5mm;}
+.dsplit .warn ul{list-style:none;}
+.dsplit .warn li{font-size:12pt;line-height:1.45;margin-bottom:4.4mm;padding-left:8mm;position:relative;color:#7A271A;}
+.dsplit .warn li:before{content:'\2715';position:absolute;left:0;top:0;color:#D92D20;font-weight:800;font-size:12pt;}
+
+/* Steps stacked down a column when they sit beside a screenshot. The number
+   moves inline beside the heading rather than sitting above it, because three
+   stacked steps in the row layout run off the bottom of the slide. */
+.dsteps.stack{grid-template-columns:1fr;gap:6mm;margin:0;align-content:center;}
+.dsteps.stack .dstep{display:grid;grid-template-columns:12mm 1fr;column-gap:5mm;row-gap:0;align-items:start;}
+.dsteps.stack .dstep .n{grid-row:1 / span 2;width:10mm;height:10mm;font-size:10pt;margin-top:.6mm;}
+.dsteps.stack .dstep h4{margin-top:0;font-size:12.5pt;}
+.dsteps.stack .dstep p{margin-top:2mm;font-size:10pt;}
+.dmedia .dshot{align-self:center;}
+
+/* A media slide carrying no copy: let the frame use the whole slide. */
+.dmedia.bare{margin-top:auto;margin-bottom:auto;}
+.dmedia.bare .vwrap{max-width:210mm;}
+
+/* The call-window capture is portrait. Left unconstrained beside a column of
+   copy it runs off the bottom of the slide and over the text. */
+.dshot.tall{max-width:62mm;margin-left:auto;margin-right:auto;}
+
+/* ---------- wins grid ----------
+   Four screenshots of different aspect ratios. A fixed-height frame with the
+   image cropped to fill keeps the grid even; without it the tall WhatsApp
+   captures dictate the row height and the short SMS ones float in whitespace. */
+.dwins{flex-shrink:1;min-height:0;display:grid;grid-template-columns:repeat(4,1fr);gap:7mm;
+       margin-top:auto;margin-bottom:auto;align-items:start;}
+.dwins figure{display:flex;flex-direction:column;gap:3.4mm;}
+.dwins .dshot{height:74mm;display:flex;align-items:center;justify-content:center;overflow:hidden;
+              background:#fff;padding:3mm;}
+.dwins .dshot img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;}
+.dwins figcaption{font-size:9.5pt;line-height:1.4;color:var(--grey);}
+
+
+/* ---------- the call sheet preview ---------- */
+/* The screenshot is the point of this slide, so it takes the larger column and
+   is cropped to the top of the sheet where the reading lines are. */
+.dmedia.sheetmedia{grid-template-columns:1fr 1.3fr;gap:11mm;align-items:center;}
+.dshot.sheet{max-width:none;align-self:center;border-radius:2mm;overflow:hidden;
+  box-shadow:0 2px 8px rgba(20,40,35,.07), 0 16px 40px rgba(20,40,35,.10);}
+.dshot.sheet img{display:block;width:100%;}
+.sheetmedia .dsteps.stack .dstep p{font-size:9.6pt;line-height:1.5;}
+</style>
+<script>
+(function () {
+  var W = 1280, H = 720; // 338.667mm x 190.5mm at 96dpi
+  function fit() {
+    var vw = document.documentElement.clientWidth;
+    var vh = window.innerHeight;
+    var z = Math.min((vw - 40) / W, (vh - 40) / H);
+    // margins are scaled by zoom as well, so express the gutter in pre-zoom px
+    var m = ((vh - H * z) / 2) / z;
+    document.querySelectorAll('.slide').forEach(function (el) {
+      el.style.zoom = z;
+      el.style.margin = m + 'px auto';
+    });
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('DOMContentLoaded', fit);
+  fit();
+})();
+</script>
+</head>
+<body>
+
+<!-- 01 COVER -->
+<div class="slide">
+  <div class="blob d1"></div><div class="blob d2"></div>
+  <div class="dcover">
+    <img class="mark" src="assets/logo.png">
+    <div class="mid">
+      <div class="eyeb">CLIENT NETWORK</div>
+      <h1>Getting Started</h1>
+      <p class="sub"><b>Everything you need to start taking live calls and closing them.</b> What you are buying, how you get paid for it, and the one switch that decides whether your phone rings.</p>
+    </div>
+    <div class="cfoot">
+      <div class="l"><div class="dot"></div><span>INBOUND INSURANCE CALLS &nbsp;·&nbsp; EXCLUSIVE AND SCREENED</span></div>
+      <span>CLIENTNETWORK.IO</span>
+    </div>
+  </div>
+</div>
+
+<!-- 02 HOW THE CALL REACHES YOU -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">01 · THE OFFER</div></div>
+    <div class="srail"><span class="n">01</span><span class="bar"></span><span class="lbl">HOW IT REACHES YOU</span></div>
+    <h1 class="sh">Four things happen, in this order, every time</h1>
+    <div class="dflow">
+      <div class="dsteps">
+        <div class="dstep"><div class="n">1</div><h4>The spot airs</h4><p>Final expense commercials run nationwide on Netflix, Hulu, YouTube and other streaming TV.</p></div>
+        <div class="dstep"><div class="n">2</div><h4>They dial in</h4><p>A viewer watches the advert, picks up their phone and calls the number on screen. Their decision.</p></div>
+        <div class="dstep"><div class="n">3</div><h4>We route it live</h4><p>Matched to you by state and daily cap, only while you are marked available, connected in real time.</p></div>
+        <div class="dstep"><div class="n">4</div><h4>You answer. It counts.</h4><p>A live prospect is on the line. Calls under 10 seconds are free. After that, you pay by how long the call runs.</p></div>
+      </div>
+      <div class="dnots">
+        <span>Not social click-to-call</span>
+        <span>Not warm transfers</span>
+        <span>Not data lists</span>
+        <span>Not robocalls</span>
+      </div>
+      <div class="dquote">
+        <p>&ldquo;I&rsquo;m looking at the commercial. It&rsquo;s the burial expense, $25,000, lowest $2 a day.&rdquo;</p>
+        <span>A CALLER, 45 SECONDS INTO A CALL LAST WEEK</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 03 CUSTOMER JOURNEY -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">01 · THE OFFER</div></div>
+    <div class="srail"><span class="n">01</span><span class="bar"></span><span class="lbl">THE CUSTOMER JOURNEY</span></div>
+    <h1 class="sh">This is what they saw</h1>
+    <p class="sl">Our commercial runs on connected TV. Someone watching it picks up the phone and dials the number on screen. By the time your phone rings they have already sat through this.</p>
+    <div class="dmedia wide">
+      <div>
+        <div class="dshot vwrap">
+          <video class="screenonly" controls preload="metadata" poster="assets/fex-poster.png">
+            <source src="assets/fex-ctv.mp4" type="video/mp4">
+          </video>
+          <img class="printonly" src="assets/fex-poster.png">
+          <div class="play printonly"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 04 WHAT YOU ARE BUYING -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">01 · THE OFFER</div></div>
+    <div class="srail"><span class="n">01</span><span class="bar"></span><span class="lbl">THE OFFER</span></div>
+    <h1 class="sh">What you are buying</h1>
+    <p class="sl">We buy the media and run the adverts. Someone shopping for cover sees one, rings the number themselves, and we check they fit your criteria before anything reaches you.</p>
+    <div class="d3">
+      <div class="t"><h3>Inbound call-ins</h3><p>Every caller dials us after seeing one of our adverts. Nobody on your phone has been cold called.</p></div>
+      <div class="t"><h3>Exclusive to you</h3><p>The caller is transferred to you and to nobody else. We never resell the same call.</p></div>
+      <div class="t"><h3>Screened to your contract</h3><p>The states you selected, the hours you can answer, and only while your team is available.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 05 THE BUFFER -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">02 · BILLING</div></div>
+    <div class="srail"><span class="n">02</span><span class="bar"></span><span class="lbl">YOUR BUFFER</span></div>
+    <h1 class="sh">You pay by how long the call runs</h1>
+    <p class="sl">Our buffer has three layers. Time counts from the moment you answer, and each call is charged once, at the highest tier it reaches.</p>
+    <div class="dstats">
+      <div><div class="k">UNDER 10 SECONDS</div><div class="v">Free</div><div class="s">Instant hang-ups, dead air, misdials and robocalls never cost you a thing.</div></div>
+      <div><div class="k">10 TO 59 SECONDS</div><div class="v">$32.50</div><div class="s">Short calls are charged at half rate. A qualified caller you end early is reviewed and charged $60.</div></div>
+      <div><div class="k">60 SECONDS AND OVER</div><div class="v">$60</div><div class="s">A full conversation with someone who dialled the commercial themselves.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 06 WHAT YOU PAY FOR -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">02 · BILLING</div></div>
+    <div class="srail"><span class="n">02</span><span class="bar"></span><span class="lbl">WHAT YOU PAY FOR</span></div>
+    <h1 class="sh">You only pay for live conversations</h1>
+    <p class="sl">One set of tiers, the same for every buyer on this campaign. <b>Free under 10 seconds, $32.50 from 10 seconds, $60 from 60 seconds.</b></p>
+    <div class="dsplit">
+      <div class="yes">
+        <div class="h">WHAT YOU ARE PAYING FOR</div>
+        <ul>
+          <li>Someone who watched our advert and dialled the number themselves</li>
+          <li>High intent: they are ringing to find out whether they qualify for cover</li>
+          <li>Your phone ringing instead of your closers dialling, so you scale by opening hours rather than hiring seats</li>
+          <li>Exclusive to you, in your states, only while you are available</li>
+        </ul>
+      </div>
+      <div class="warn">
+        <div class="h">WHAT YOU ARE NOT PAYING FOR</div>
+        <ul>
+          <li>Leads you have to dial twenty times before anyone picks up</li>
+          <li>Aged data sold to three other agencies the same week</li>
+          <li>Dialler seats, list costs and hours spent chasing voicemail</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 07 IF A CALL IS NOT RIGHT -->
+<div class="slide">
+  <div class="blob d1"></div><div class="blob d2"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">02 · BILLING</div></div>
+    <div class="srail"><span class="n">02</span><span class="bar"></span><span class="lbl">IF A CALL IS NOT RIGHT</span></div>
+    <h1 class="sh">Send it to us and we listen back</h1>
+    <div class="dstate">
+      <div class="k">CALL BY CALL</div>
+      <h2>If a call reaches you that should never have been routed, flag it in the portal within 72 hours.</h2>
+      <p>We pull the recording, listen to it ourselves and come back to you. Where we agree the call should not have reached you, <b>we credit it back to your balance</b>. We look at every one of these individually, because a recording tells us far more than a form ever would.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 08 WINS -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">02 · BILLING</div></div>
+    <div class="srail"><span class="n">02</span><span class="bar"></span><span class="lbl">WHAT BUYERS SAY</span></div>
+    <h1 class="sh">What agencies tell us after a week</h1>
+    <p class="sl">Messages from agencies taking these calls. Names removed, numbers untouched.</p>
+    <div class="dwins">
+      <figure><div class="dshot"><img src="assets/wins/win-20k.jpg"></div><figcaption>A $20,000 application written off one call, $152 a month.</figcaption></figure>
+      <figure><div class="dshot"><img src="assets/wins/win-1in3.jpg"></div><figcaption>First sale on the third call.</figcaption></figure>
+      <figure><div class="dshot"><img src="assets/wins/win-5calls.png"></div><figcaption>Five calls taken, one closed.</figcaption></figure>
+      <figure><div class="dshot"><img src="assets/wins/win-bears.png"></div><figcaption>&ldquo;If I could get 10 of those a day.&rdquo;</figcaption></figure>
+    </div>
+  </div>
+</div>
+
+<!-- 09 GETTING STARTED -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">03 · GETTING STARTED</div></div>
+    <div class="srail"><span class="n">03</span><span class="bar"></span><span class="lbl">GETTING STARTED</span></div>
+    <h1 class="sh">Getting started with us</h1>
+    <p class="sl">Three steps from this conversation to a live call on your screen. We work on a prepayment basis, so your balance draws down as calls become billable and delivery pauses when it runs out.</p>
+    <div class="dmedia" style="align-items:center;">
+      <div class="dsteps stack">
+        <div class="dstep"><div class="n">1</div><h4>Get registered</h4><p>We set your login up at client-network.theleadrouter.com and put your states and hours on the contract.</p></div>
+        <div class="dstep"><div class="n">2</div><h4>Fund the account</h4><p>Top up your balance by whatever amount suits your week. No monthly fee and no contract term.</p></div>
+        <div class="dstep"><div class="n">3</div><h4>Toggle available</h4><p>Open the call window, press Go Available, and calls start routing to you.</p></div>
+      </div>
+      <div class="dshot"><img src="assets/dash-top.png"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 10 PORTAL -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">04 · YOUR PORTAL</div></div>
+    <div class="srail"><span class="n">04</span><span class="bar"></span><span class="lbl">YOUR PORTAL</span></div>
+    <div class="dmedia wide bare">
+      <div>
+        <div class="dshot vwrap">
+          <video class="screenonly" controls preload="metadata" poster="assets/video-poster.png">
+            <source src="assets/portal-demo.mp4" type="video/mp4">
+          </video>
+          <img class="printonly" src="assets/video-poster.png">
+          <div class="play printonly"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 11 CALL LOG -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">04 · YOUR PORTAL</div></div>
+    <div class="srail"><span class="n">04</span><span class="bar"></span><span class="lbl">YOUR PORTAL</span></div>
+    <h1 class="sh">Every call, logged</h1>
+    <p class="sl">How long it ran and what it cost. Recordings sit here too, and they are worth listening back to when you are training a closer.</p>
+    <div class="dmedia wide" style="margin-top:7mm;">
+      <div class="dshot"><img src="assets/dash-calls.png"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 12 TAKING CALLS -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">05 · TAKING CALLS</div></div>
+    <div class="srail"><span class="n">05</span><span class="bar"></span><span class="lbl">TAKING CALLS</span></div>
+    <h1 class="sh">Going available</h1>
+    <p class="sl">Calls only reach you when you are marked available. That one switch is the difference between a full day and a quiet one, and the call arrives on your screen with no phone setup and nothing to forward.</p>
+    <div class="dmedia" style="align-items:center;">
+      <div class="dsteps stack">
+        <div class="dstep"><div class="n">1</div><h4>Open the call window</h4><p>Click Open call window in the top bar and leave it open while you work.</p></div>
+        <div class="dstep"><div class="n">2</div><h4>Press Go Available</h4><p>Your status flips and calls start routing to you. Close the window and they stop.</p></div>
+        <div class="dstep"><div class="n">3</div><h4>Pick up quickly</h4><p>The caller is live on the line and waiting for you.</p></div>
+      </div>
+      <div class="dshot tall"><img src="assets/callwin.png"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 13 THE CALL SCRIPT -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">05 · TAKING CALLS</div></div>
+    <div class="srail"><span class="n">05</span><span class="bar"></span><span class="lbl">ON THE CALL</span></div>
+    <h1 class="sh">You get the script too</h1>
+    <p class="sl">Every buyer gets their own copy of our inbound script, on a link of their own, built to be used live rather than read beforehand.</p>
+    <div class="dmedia sheetmedia">
+      <div class="dsteps stack">
+        <div class="dstep"><div class="n">1</div><h4>One step at a time</h4><p>Open and qualify, underwriting, the need, the carrier, the three options, then the application. Only the part you are on is on screen.</p></div>
+        <div class="dstep"><div class="n">2</div><h4>Say it, don't read it</h4><p>The lines you speak are set apart from the notes, and the caller's details drop into every line that names them.</p></div>
+        <div class="dstep"><div class="n">3</div><h4>Yours to change</h4><p>Reword any line, add your own prompts, and save. Nothing you write reaches another buyer.</p></div>
+      </div>
+      <div class="dshot sheet"><img src="assets/script-sheet.png"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 14 MISSED CALLS -->
+<div class="slide">
+  <div class="blob d1"></div><div class="blob d2"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">06 · MISSED CALLS</div></div>
+    <div class="srail"><span class="n">06</span><span class="bar"></span><span class="lbl">MISSED CALLS</span></div>
+    <h1 class="sh">The first one is on us</h1>
+    <div class="dstate">
+      <div class="k">IF YOU MISS A CALL</div>
+      <h2>After that, missed calls are $40 each.</h2>
+      <p>If you are marked available, a call comes through and nobody picks it up, we cover the first one as a goodwill gesture. <b>A missed call also switches your availability off</b>, so open the call window, press Go Available again, and check the bell for anything that came in while you were away.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 15 TOP UP -->
+<div class="slide">
+  <div class="blob d1"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">07 · KEEPING IT LIVE</div></div>
+    <div class="srail"><span class="n">07</span><span class="bar"></span><span class="lbl">KEEPING IT LIVE</span></div>
+    <h1 class="sh">Top up before you reach zero</h1>
+    <p class="sl">The moment your balance runs out, routing stops and the calls we would have sent you go to someone else.</p>
+    <div class="dstats">
+      <div><div class="k">TOP UP AT</div><div class="v">$180 left</div><div class="s">Enough for three full calls, so routing never stops mid-shift.</div></div>
+      <div><div class="k">GOES LIVE</div><div class="v">Instantly</div><div class="s">As soon as the payment clears.</div></div>
+      <div><div class="k">IF YOU RUN DRY</div><div class="v">Routing stops</div><div class="s">Nothing reaches you until your balance is topped up.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 17 CONTACT -->
+<div class="slide">
+  <div class="blob d1"></div><div class="blob d2"></div>
+  <div class="inner">
+    <div class="shead"><div class="brand"><img src="assets/logo.png"><span>CLIENT<br>NETWORK</span></div><div class="num">CLIENT NETWORK</div></div>
+    <div class="srail"><span class="bar"></span><span class="lbl">ANY QUESTIONS</span></div>
+    <h1 class="sh">We are one message away</h1>
+    <div class="dcontact">
+      <div><div class="k">EMAIL US</div><div class="v">hello@clientnetwork.io</div></div>
+      <div><div class="k">CALL US</div><div class="v">+1 813 568 9296</div></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
